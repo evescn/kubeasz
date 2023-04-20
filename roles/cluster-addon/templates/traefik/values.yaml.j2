@@ -1,0 +1,62 @@
+deployment:
+  enabled: true
+  kind: Deployment
+
+# 使用 IngressClass. Traefik 版本<2.3 或者 Kubernetes 版本 < 1.18.x 会被忽略
+ingressClass:
+  # 还没有进行完整的单元测试，pending https://github.com/rancher/helm-unittest/pull/12
+  enabled: true
+  isDefaultClass: false
+
+ingressRoute:  # 不用自动创建，我们自己处理
+  dashboard:
+    enabled: false
+
+#
+# 配置 providers
+#
+providers:
+  kubernetesCRD:  # 开启 crd provider
+    enabled: true
+    allowCrossNamespace: true  # 是否允许跨命名空间
+    allowExternalNameServices: true  # 是否允许使用 ExternalName 的服务
+
+  kubernetesIngress:  # 开启 ingress provider
+    enabled: true
+    allowExternalNameServices: true
+
+logs:
+  general:
+    # format: json
+    level: ERROR
+  access:
+    enabled: true
+
+ports:
+  web:
+    port: 8000
+    hostPort: 80  # 使用 hostport 模式
+
+  websecure:
+    port: 8443
+    hostPort: 443  # 使用 hostport 模式
+
+  metrics:
+    port: 9100
+    hostPort: 9101
+
+service:  # host 模式就不需要创建 Service 了，云端环境可以用 Service 模式
+  enabled: false
+
+resources:
+  # requests:
+  #   cpu: "100m"
+  #   memory: "100Mi"
+  # limits:
+  #   cpu: "100m"
+  # s  memory: "100Mi"
+
+nodeSelector:   # 固定到 n1 节点
+  kubernetes.io/hostname: 192.168.0.205
+
+
